@@ -15,9 +15,9 @@ import rootlogon
 import metaroot
 
 # =============================================================================
-template_num_trials = 1000
-# poisson_template_spacing = 0.1
-poisson_template_spacing = 0.01
+template_num_trials = 10000
+poisson_template_spacing = 0.1
+# poisson_template_spacing = 0.01
 poisson_templates = {}
 cumulative_poisson_templates = {}
 
@@ -70,12 +70,18 @@ def central_interval(t, points_per_bin):
         sp = i*poisson_template_spacing
         generate_poisson_templates(sp)
 
+        print 't: %s - test bin: %s - i: %s - sp: %s' % (t, test_bin, i, sp)
+        for j in xrange(len(cumulative_poisson_templates[sp])):
+            print '\tj: %d - bin prob: %f - cum prob %f' % (j, poisson_templates[sp][j], cumulative_poisson_templates[sp][j])
+        # print 'sp: %s - cum_prob: %s' % (sp, cumulative_poisson_templates)
+
         if len(cumulative_poisson_templates[sp]) <= test_bin:
             continue
 
         if cumulative_poisson_templates[sp][test_bin] < 0.84:
             u = sp + poisson_template_spacing
-            # print '\t\tupper limit: %s' % u
+            print '\t\tcum prob of test bin: %s' % cumulative_poisson_templates[sp][test_bin]
+            print '\t\tupper limit: %s' % u
 
     # search for lower bound
     # print 'looking for lower limit for t: %s' % t
@@ -106,13 +112,10 @@ def mode_centered_interval(t):
 # -----------------------------------------------------------------------------
 def plot_coverage_probability(s_max, points_per_bin, n_trials):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # interval_generators = { 'root_n':root_n_interval
-    #                       , 'central':central_interval
-                          # , 'feldman-cousins':feldman_cousins_interval
-                          # , 'mode':mode_centered_interval
-                          # }
     interval_generators = { 'central':central_interval
                           , 'root(n)':root_n_interval
+                          # , 'feldman-cousins':feldman_cousins_interval
+                          # , 'mode':mode_centered_interval
                           }
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -138,9 +141,9 @@ def plot_coverage_probability(s_max, points_per_bin, n_trials):
             t = np.random.poisson(s)
             for ig in prob:
                 this_gen = interval_generators[ig]
-                # l,u = this_gen(t, sample_points)
                 l,u = this_gen(t, points_per_bin)
-                # print 's; %s - t: %s - l: %s - u: %s' % (s,t,l,u)
+                print '------------------------------------------------------'
+                print 's; %s - t: %s - l: %s - u: %s' % (s,t,l,u)
                 l_profile[ig][s_itr] += float(l)/n_trials
                 u_profile[ig][s_itr] += float(u)/n_trials
                 if s >= l and s <= u:
@@ -247,7 +250,7 @@ def main():
     # plot_coverage_probability(20, 10, 1000)
     # plot_coverage_probability(10, 10, 1000)
     # plot_coverage_probability(3, 10, 1000)
-    plot_coverage_probability(5, 2, 1000)
+    plot_coverage_probability(5, 2, 10)
 
 # =============================================================================
 if __name__ == '__main__':
