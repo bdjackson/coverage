@@ -109,41 +109,6 @@ def central_interval(t, points_per_bin):
 
         l += 1
 
-    # # search for upper bound
-    # # print 'looking for upper limit for t: %s' % t
-    # i = -1
-    # while u == -1:
-    #     i +=1
-    #     sp = i*poisson_template_spacing
-    #     generate_poisson_templates(sp)
-
-    #     print 't: %s - test bin: %s - i: %s - sp: %s' % (t, test_bin, i, sp)
-    #     for j in xrange(len(cumulative_poisson_templates[sp])):
-    #         print '\tj: %d - bin prob: %f - cum prob %f' % (j, poisson_templates[sp][j], cumulative_poisson_templates[sp][j])
-    #     # print 'sp: %s - cum_prob: %s' % (sp, cumulative_poisson_templates)
-
-    #     if len(cumulative_poisson_templates[sp]) <= test_bin:
-    #         continue
-
-    #     if cumulative_poisson_templates[sp][test_bin] < 0.84:
-    #         u = sp + poisson_template_spacing
-    #         print '\t\tcum prob of test bin: %s' % cumulative_poisson_templates[sp][test_bin]
-    #         print '\t\tupper limit: %s' % u
-
-    # # search for lower bound
-    # # print 'looking for lower limit for t: %s' % t
-    # i = -1
-    # while l == -1:
-    #     i += 1
-    #     sp = i*poisson_template_spacing
-    #     generate_poisson_templates(sp)
-
-    #     if len(cumulative_poisson_templates[sp]) <= test_bin:
-    #         continue
-
-    #     if cumulative_poisson_templates[sp][test_bin] > 0.16:
-    #         l = sp - poisson_template_spacing
-
     return (l, u)
 
 # -----------------------------------------------------------------------------
@@ -204,7 +169,7 @@ def draw_probabilities(coverage_prob, sample_points):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     num_points = len(sample_points)
     c = ROOT.TCanvas('prob')
-    frame = ROOT.TH2F( 'dummy_frame'
+    frame = ROOT.TH2F( 'dummy_frame_prob'
                      , 'coverage probability ; Poisson parameter ; Coverage probability'
                      , 1, 0, sample_points[-1]
                      , 1, 0, 1.05
@@ -254,7 +219,7 @@ def draw_profiles(l_profile, u_profile, sample_points):
         print '\tl profile (%d): %s' % (len(l_profile[key]), l_profile[key])
         print '\tu profile (%d): %s' % (len(u_profile[key]), u_profile[key])
         c = ROOT.TCanvas('profiles_%s' % key)
-        frame = ROOT.TH2F( 'dummy_frame'
+        frame = ROOT.TH2F( 'dummy_frame_profile'
                          , 'average profiles for %s ; Observed range ; Poisson parameter' % key
                          , 1, 0, sample_points[-1]+0.5
                          , 1, 0, 2*sample_points[-1]
