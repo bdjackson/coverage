@@ -42,6 +42,22 @@ def generate_poisson_templates(s):
                 cumulative_poisson_templates[s][i] += poisson_templates[s][j]
 
 # -----------------------------------------------------------------------------
+def get_poisson_prob(test_stat, mean):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # prob = mean^test_stat * exp(-mean)/(test_stat!)
+    prob = mean**test_stat * math.exp(-mean)/(math.factorial(test_stat))
+    return prob
+
+# -----------------------------------------------------------------------------
+def get_cumulative_prob(test_stat, mean):
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # prob = mean^test_stat * exp(-mean)/(test_stat!)
+    cum_prob = 0.
+    for i in xrange(test_stat+1):
+        cum_prob += get_poisson_prob(i, mean)
+    return cum_prob
+
+# -----------------------------------------------------------------------------
 def find_test_bin(t, points_per_bin):
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     tb = int(t*points_per_bin)
@@ -63,39 +79,70 @@ def central_interval(t, points_per_bin):
     u = -1
 
     # search for upper bound
-    # print 'looking for upper limit for t: %s' % t
     i = -1
     while u == -1:
-        i +=1
-        sp = i*poisson_template_spacing
-        generate_poisson_templates(sp)
+        i += 1
+        # test_paramer = i*poisson_template_spacing
+        test_paramer = i
+        # test_prob = get_poisson_prob(t, test_paramer)
 
-        print 't: %s - test bin: %s - i: %s - sp: %s' % (t, test_bin, i, sp)
-        for j in xrange(len(cumulative_poisson_templates[sp])):
-            print '\tj: %d - bin prob: %f - cum prob %f' % (j, poisson_templates[sp][j], cumulative_poisson_templates[sp][j])
-        # print 'sp: %s - cum_prob: %s' % (sp, cumulative_poisson_templates)
+        cumulative_prob = get_cumulative_prob(i, t)
 
-        if len(cumulative_poisson_templates[sp]) <= test_bin:
-            continue
+        # if cumulative_prob > 0.16:
+        if cumulative_prob < 0.84:
+            u = test_paramer
 
-        if cumulative_poisson_templates[sp][test_bin] < 0.84:
-            u = sp + poisson_template_spacing
-            print '\t\tcum prob of test bin: %s' % cumulative_poisson_templates[sp][test_bin]
-            print '\t\tupper limit: %s' % u
+        u += 1
 
     # search for lower bound
-    # print 'looking for lower limit for t: %s' % t
     i = -1
     while l == -1:
         i += 1
-        sp = i*poisson_template_spacing
-        generate_poisson_templates(sp)
+        # test_paramer = i*poisson_template_spacing
+        test_paramer = i
+        # test_prob = get_poisson_prob(t, test_paramer)
 
-        if len(cumulative_poisson_templates[sp]) <= test_bin:
-            continue
+        cumulative_prob = get_cumulative_prob(i, t)
 
-        if cumulative_poisson_templates[sp][test_bin] > 0.16:
-            l = sp - poisson_template_spacing
+        if cumulative_prob < 0.16:
+            l = test_paramer
+
+        l += 1
+
+    # # search for upper bound
+    # # print 'looking for upper limit for t: %s' % t
+    # i = -1
+    # while u == -1:
+    #     i +=1
+    #     sp = i*poisson_template_spacing
+    #     generate_poisson_templates(sp)
+
+    #     print 't: %s - test bin: %s - i: %s - sp: %s' % (t, test_bin, i, sp)
+    #     for j in xrange(len(cumulative_poisson_templates[sp])):
+    #         print '\tj: %d - bin prob: %f - cum prob %f' % (j, poisson_templates[sp][j], cumulative_poisson_templates[sp][j])
+    #     # print 'sp: %s - cum_prob: %s' % (sp, cumulative_poisson_templates)
+
+    #     if len(cumulative_poisson_templates[sp]) <= test_bin:
+    #         continue
+
+    #     if cumulative_poisson_templates[sp][test_bin] < 0.84:
+    #         u = sp + poisson_template_spacing
+    #         print '\t\tcum prob of test bin: %s' % cumulative_poisson_templates[sp][test_bin]
+    #         print '\t\tupper limit: %s' % u
+
+    # # search for lower bound
+    # # print 'looking for lower limit for t: %s' % t
+    # i = -1
+    # while l == -1:
+    #     i += 1
+    #     sp = i*poisson_template_spacing
+    #     generate_poisson_templates(sp)
+
+    #     if len(cumulative_poisson_templates[sp]) <= test_bin:
+    #         continue
+
+    #     if cumulative_poisson_templates[sp][test_bin] > 0.16:
+    #         l = sp - poisson_template_spacing
 
     return (l, u)
 
@@ -250,7 +297,7 @@ def main():
     # plot_coverage_probability(20, 10, 1000)
     # plot_coverage_probability(10, 10, 1000)
     # plot_coverage_probability(3, 10, 1000)
-    plot_coverage_probability(5, 2, 10)
+    plot_coverage_probability(5, 2, 100)
 
 # =============================================================================
 if __name__ == '__main__':
