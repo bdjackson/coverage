@@ -96,31 +96,21 @@ def central_interval(t, points_per_bin):
     while u == -1:
         i += 1
         test_param= i*poisson_template_spacing
-        # test_param = i
-        # test_prob = get_poisson_prob(t, test_param)
 
-        # cumulative_prob = get_cumulative_prob(test_param, t)
         cumulative_prob = get_cumulative_prob(t, test_param)
 
-        # if cumulative_prob > 0.16:
         if cumulative_prob < 0.16:
-        # if cumulative_prob > 0.84:
             u = test_param
 
     # search for lower bound
-    # print 'searching for upper bound -- t: %s' % t
+    # print 'searching for lower bound -- t: %s' % t
     i = -1
     while l == -1:
         i += 1
         test_param = i*poisson_template_spacing
-        # test_param = i
-        # test_prob = get_poisson_prob(t, test_param)
 
-        # cumulative_prob = get_cumulative_prob(test_param, t)
         cumulative_prob = get_cumulative_prob(t, test_param)
 
-        # if cumulative_prob > 0.16:
-        # if cumulative_prob > 0.84:
         if cumulative_prob < 0.84:
             l = test_param - 2*poisson_template_spacing
 
@@ -169,8 +159,8 @@ def plot_coverage_probability(s_max, points_per_bin, n_trials):
             for ig in prob:
                 this_gen = interval_generators[ig]
                 l,u = this_gen(t, points_per_bin)
-                # print '------------------------------------------------------'
-                # print 's; %s - t: %s - l: %s - u: %s' % (s,t,l,u)
+                print '------------------------------------------------------'
+                print 's: %s - t: %s - l: %s - u: %s' % (s,t,l,u)
                 l_profile[ig][s_itr] += float(l)/n_trials
                 u_profile[ig][s_itr] += float(u)/n_trials
                 if s >= l and s <= u:
@@ -277,7 +267,7 @@ def main():
     # plot_coverage_probability(20, 10, 1000)
     # plot_coverage_probability(10, 10, 1000)
     # plot_coverage_probability(3, 10, 1000)
-    plot_coverage_probability(10, 2, 1000)
+    plot_coverage_probability(10, 2, 10)
 
 # =============================================================================
 if __name__ == '__main__':
